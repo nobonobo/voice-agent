@@ -36,6 +36,10 @@ go install .
 
 # Configuration
 
+- GoogleCloudPlatformにて支払い権限のあるSpeech-API有効なAPIキーを作成してGCP_API_KEYにセット
+- OpenAIにてチャージ残が残っているアカウントからAPIキーを作成してOAI_API_KEYにセット
+- VoceVoxCoreランタイムを保存するフォルダをVOICEVOX_DIRに指定
+
 ```env:sample.env
 GCP_API_KEY=######################################
 OAI_API_KEY=##-################################################
