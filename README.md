@@ -28,7 +28,11 @@ sudo apt install sox
 
 # Install
 
-go install github.com/nobonobo/voice-agent@latest
+```
+git clone https://github.com/nobonobo/voice-agent
+cd voice-agent
+go install .
+```
 
 # Configuration
 
