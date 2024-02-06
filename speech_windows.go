@@ -11,10 +11,10 @@ const (
 
 var voiceVoxFiles = []string{
 	"voicevox_core.dll",
-	"onnxruntime_providers_shared.dll",
-	"onnxruntime.dll",
 	"open_jtalk_dic_utf_8-1.11",
 	"model",
+	"onnxruntime_providers_shared.dll",
+	"onnxruntime.dll",
 }
 
 func voiceVoxPreSetup() error {

@@ -9,9 +9,9 @@ const (
 
 var voiceVoxFiles = []string{
 	"libvoicevox_core.dylib",
-	"libonnxruntime.1.14.0.dylib",
 	"open_jtalk_dic_utf_8-1.11",
 	"model",
+	"libonnxruntime.1.14.0.dylib",
 }
 
 func voiceVoxPreSetup() error { return nil }

@@ -174,9 +174,9 @@ func TTS(ctx context.Context, input <-chan string) error {
 		return err
 	}
 	vv, err := nanoda.NewVoicevox(
-		filepath.Join(config.VoiceVoxDir, "voicevox_core.dll"),
-		filepath.Join(config.VoiceVoxDir, "open_jtalk_dic_utf_8-1.11"),
-		filepath.Join(config.VoiceVoxDir, "model"))
+		filepath.Join(config.VoiceVoxDir, voiceVoxFiles[0]),
+		filepath.Join(config.VoiceVoxDir, voiceVoxFiles[1]),
+		filepath.Join(config.VoiceVoxDir, voiceVoxFiles[2]))
 	if err != nil {
 		return err
 	}
