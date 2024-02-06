@@ -25,7 +25,7 @@ func init() {
 	flag.StringVar(&dotenv, "env", ".env", "load .env file")
 	flag.Parse()
 	if err := godotenv.Load(dotenv); err != nil {
-		log.Fatal(err)
+		log.Print(err)
 	}
 	if err := env.Parse(&config); err != nil {
 		log.Fatal(err)
