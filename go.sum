@@ -77,6 +77,8 @@ github.com/hajimehoshi/ebiten/v2 v2.6.5 h1:lALv+qhEK3CBWViyiGpz4YcR6slVJEjCiS7sE
 github.com/hajimehoshi/ebiten/v2 v2.6.5/go.mod h1:TZtorL713an00UW4LyvMeKD8uXWnuIuCPtlH11b0pgI=
 github.com/joho/godotenv v1.5.1 h1:7eLL/+HRGLY0ldzfGMeQkb7vMd0as4CfYvUVzLqw0N0=
 github.com/joho/godotenv v1.5.1/go.mod h1:f4LDr5Voq0i2e/R5DDNOoa2zzDfwtkZa6DnEwAbqwq4=
+github.com/nobonobo/nanoda v0.0.0-20240206001753-a844a78aa463 h1:dPOEeHJwagvEVsR+V1UMHod5XVprbHMP4BIxRftc5qU=
+github.com/nobonobo/nanoda v0.0.0-20240206001753-a844a78aa463/go.mod h1:PmIFUmgOMGcflM93Hu+DIvy8yWDluFjnlgrcjg8ALKo=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/prometheus/client_model v0.0.0-20190812154241-14fe0d1b01d4/go.mod h1:xMI15A0UPsDsEKsMN9yxemIoYk6Tm2C1GtYGdfGttqA=

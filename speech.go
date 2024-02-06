@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -18,11 +19,10 @@ import (
 	"github.com/aethiopicuschan/nanoda"
 	"github.com/ebitengine/oto/v3"
 	resampler "github.com/hajimehoshi/ebiten/v2/audio/wav"
-	"golang.org/x/sys/windows"
 )
 
 const (
-	downloadUrl = "https://github.com/VOICEVOX/voicevox_core/releases/download/0.15.0-preview.13/download-windows-x64.exe"
+	downloadUrl = "https://github.com/VOICEVOX/voicevox_core/releases/download/0.15.0-preview.13"
 )
 
 func download(u, folder string) error {
@@ -48,14 +48,7 @@ func download(u, folder string) error {
 }
 
 func isInstalled(folder string) bool {
-	files := []string{
-		"voicevox_core.dll",
-		"onnxruntime_providers_shared.dll",
-		"onnxruntime.dll",
-		"open_jtalk_dic_utf_8-1.11",
-		"model",
-	}
-	for _, f := range files {
+	for _, f := range voiceVoxFiles {
 		if _, err := os.Stat(filepath.Join(folder, f)); err != nil {
 			return false
 		}
@@ -64,12 +57,12 @@ func isInstalled(folder string) bool {
 }
 
 func installVoiceVox(folder string) error {
-	if err := download(downloadUrl, folder); err != nil {
+	if err := download(path.Join(downloadUrl, downloadFile), folder); err != nil {
 		return err
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
 	defer cancel()
-	cmd := exec.CommandContext(ctx, "./download-windows-x64.exe",
+	cmd := exec.CommandContext(ctx, filepath.Join(".", downloadFile),
 		"--device", "cpu", "--version", "0.15.0-preview.13",
 	)
 	cmd.Dir = folder
@@ -90,7 +83,7 @@ func setupVoiceVox() error {
 			return err
 		}
 	}
-	if err := windows.SetDllDirectory(config.VoiceVoxDir); err != nil {
+	if err := voiceVoxPreSetup(); err != nil {
 		return err
 	}
 	log.Println("voicevox_core installed:", config.VoiceVoxDir)

@@ -19,7 +19,11 @@ func (w writer) Write(b []byte) (int, error) {
 func Capture(ctx context.Context, ch chan<- []byte) error {
 	log.Println("capture start")
 	defer log.Println("capture end")
-	args := strings.Fields("sox -e signed-integer -b 16 -c 1 -r 16000 -t waveaudio 0 -e signed-integer -b 16 -t raw -")
+	opt := "-d"
+	if IsWindows {
+		opt = "-t waveaudio 0"
+	}
+	args := strings.Fields("sox -e signed-integer -b 16 -c 1 -r 16000 " + opt + " -e signed-integer -b 16 -t raw -")
 	cmd := exec.CommandContext(ctx, args[0], args[1:]...)
 	//cmd.Stderr = os.Stderr
 	cmd.Stdout = writer(ch)

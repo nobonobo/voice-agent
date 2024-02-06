@@ -49,4 +49,4 @@ require (
 	google.golang.org/protobuf v1.32.0 // indirect
 )
 
-replace github.com/aethiopicuschan/nanoda v0.0.2 => ./nanoda
+replace github.com/aethiopicuschan/nanoda => github.com/nobonobo/nanoda v0.0.0-20240206001753-a844a78aa463
