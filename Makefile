@@ -1,5 +1,6 @@
 INSTALL_CMD = sudo apt install sox
 ifeq ($(OS),Windows_NT)
+	INSTALL_CMD = winget install SoX
 	INSTALL_CMD = scoop install sox
 else
   UNAME_OS := $(shell uname -s)

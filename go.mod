@@ -8,9 +8,11 @@ require (
 	github.com/caarlos0/env/v10 v10.0.0
 	github.com/ebitengine/oto/v3 v3.1.0
 	github.com/hajimehoshi/ebiten/v2 v2.6.5
+	github.com/joho/godotenv v1.5.1
 	github.com/sashabaranov/go-openai v1.19.2
 	golang.org/x/sys v0.16.0
 	google.golang.org/api v0.160.0
+	google.golang.org/grpc v1.61.0
 )
 
 require (
@@ -44,7 +46,6 @@ require (
 	google.golang.org/genproto v0.0.0-20240116215550-a9fa1716bcac // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20240125205218-1f4bbc51befe // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240125205218-1f4bbc51befe // indirect
-	google.golang.org/grpc v1.61.0 // indirect
 	google.golang.org/protobuf v1.32.0 // indirect
 )
 

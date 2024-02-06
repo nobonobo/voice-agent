@@ -6,7 +6,10 @@ import (
 	"context"
 	"io"
 	"log"
+	"net/http"
+	"net/url"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -18,10 +21,80 @@ import (
 	"golang.org/x/sys/windows"
 )
 
-func init() {
-	if err := windows.SetDllDirectory(config.VoiceVoxDir); err != nil {
-		log.Fatal(err)
+const (
+	downloadUrl = "https://github.com/VOICEVOX/voicevox_core/releases/download/0.15.0-preview.13/download-windows-x64.exe"
+)
+
+func download(u, folder string) error {
+	info, err := url.Parse(u)
+	if err != nil {
+		return err
 	}
+	fname := filepath.Join(folder, filepath.Base(info.Path))
+	resp, err := http.Get(u)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	f, err := os.Create(fname)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	if _, err := io.Copy(f, resp.Body); err != nil {
+		return err
+	}
+	return nil
+}
+
+func isInstalled(folder string) bool {
+	files := []string{
+		"voicevox_core.dll",
+		"onnxruntime_providers_shared.dll",
+		"onnxruntime.dll",
+		"open_jtalk_dic_utf_8-1.11",
+		"model",
+	}
+	for _, f := range files {
+		if _, err := os.Stat(filepath.Join(folder, f)); err != nil {
+			return false
+		}
+	}
+	return true
+}
+
+func installVoiceVox(folder string) error {
+	if err := download(downloadUrl, folder); err != nil {
+		return err
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
+	defer cancel()
+	cmd := exec.CommandContext(ctx, "./download-windows-x64.exe",
+		"--device", "cpu", "--version", "0.15.0-preview.13",
+	)
+	cmd.Dir = folder
+	cmd.Stderr = os.Stderr
+	cmd.Stdout = os.Stdout
+	log.Println("install voicevox_core:", folder)
+	if err := cmd.Run(); err != nil {
+		return err
+	}
+	return nil
+}
+
+func setupVoiceVox() error {
+	folder := config.VoiceVoxDir
+	if !isInstalled(folder) {
+		os.RemoveAll(folder)
+		if err := installVoiceVox(filepath.Dir(folder)); err != nil {
+			return err
+		}
+	}
+	if err := windows.SetDllDirectory(config.VoiceVoxDir); err != nil {
+		return err
+	}
+	log.Println("voicevox_core installed:", config.VoiceVoxDir)
+	return nil
 }
 
 func generate(s nanoda.Synthesizer, words string) ([]byte, error) {
@@ -96,8 +169,9 @@ func loadDict(ud *nanoda.UserDict) error {
 }
 
 func TTS(ctx context.Context, input <-chan string) error {
-	log.Println("TTS Engine started")
-	defer log.Println("TTS Engine stopped")
+	if err := setupVoiceVox(); err != nil {
+		return err
+	}
 	ctxOto, _, err := oto.NewContext(&oto.NewContextOptions{
 		SampleRate:   48000,
 		ChannelCount: 1,
