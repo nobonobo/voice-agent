@@ -1,0 +1,3 @@
+[submodule "nanoda"]
+	path = nanoda
+	url = https://github.com/aethiopicuschan/nanoda.git
