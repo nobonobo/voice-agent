@@ -109,7 +109,7 @@ func generate(s nanoda.Synthesizer, words string) ([]byte, error) {
 	return io.ReadAll(w)
 }
 
-func playback(ctxOto *oto.Context, s nanoda.Synthesizer, words string) error {
+func playback(ctx context.Context, ctxOto *oto.Context, s nanoda.Synthesizer, words string) error {
 	b, err := generate(s, words)
 	if err != nil {
 		return err
@@ -122,12 +122,16 @@ func playback(ctxOto *oto.Context, s nanoda.Synthesizer, words string) error {
 	defer p.Close()
 	p.Play()
 	tick := time.NewTicker(10 * time.Millisecond)
-	for range tick.C {
-		if !p.IsPlaying() {
-			break
+	for {
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-tick.C:
+			if !p.IsPlaying() {
+				return nil
+			}
 		}
 	}
-	return nil
 }
 
 func loadDict(ud *nanoda.UserDict) error {
@@ -142,6 +146,9 @@ func loadDict(ud *nanoda.UserDict) error {
 	scanner := bufio.NewScanner(fp)
 	for scanner.Scan() {
 		fields := strings.Split(scanner.Text(), ",")
+		if len(fields) != 4 {
+			continue
+		}
 		tp, err := strconv.Atoi(fields[2])
 		if err != nil {
 			tp = 1
@@ -150,12 +157,11 @@ func loadDict(ud *nanoda.UserDict) error {
 		if err != nil {
 			acc = 0
 		}
-		ud.AddWord(nanoda.Word{
-			Surface:       fields[0],
-			Pronunciation: fields[1],
-			WordType:      nanoda.WordType(tp), // PROPER_NOUN=0, COMMON_NOUN=1, VERB=2, ADJECTIVE=3
-			AccentType:    uint64(acc),
-		})
+		ud.AddWord(nanoda.NewWord(
+			fields[0], fields[1],
+			nanoda.WithAccentType(uint64(acc)),
+			nanoda.WithWordType(nanoda.WordType(tp)), // PROPER_NOUN=0, COMMON_NOUN=1, VERB=2, ADJECTIVE=3
+		))
 		log.Println("add:", fields)
 	}
 	return ud.Use()
@@ -198,7 +204,7 @@ func TTS(ctx context.Context, input <-chan string) error {
 		case text := <-input:
 			log.Println("->", text)
 			for i := 0; i < 3; i++ {
-				if err := playback(ctxOto, s, text); err != nil {
+				if err := playback(ctx, ctxOto, s, text); err != nil {
 					log.Print(err)
 					continue
 				}
