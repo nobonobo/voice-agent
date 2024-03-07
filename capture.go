@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"os/exec"
+	"runtime"
 	"strings"
 )
 
@@ -20,7 +21,7 @@ func Capture(ctx context.Context, ch chan<- []byte) error {
 	log.Println("capture start")
 	defer log.Println("capture end")
 	opt := "-d"
-	if IsWindows {
+	if runtime.GOOS == "windows" {
 		opt = "-t waveaudio 0"
 	}
 	args := strings.Fields("sox -e signed-integer -b 16 -c 1 -r 16000 " + opt + " -e signed-integer -b 16 -t raw -")

@@ -14,7 +14,6 @@ var config = struct {
 	OaiAPIKey    string  `env:"OAI_API_KEY,required"`
 	OaiModel     string  `env:"OAI_MODEL" envDefault:"gpt-3.5-turbo"`
 	OaiMaxTokens int     `env:"OAI_MAX_TOKENS" envDefault:"1024"`
-	VoiceVoxDir  string  `env:"VOICEVOX_DIR" envDefault:"./voicevox_core"`
 	ActorID      int     `env:"ACTOR_ID" envDefault:"3"`
 	TtsSpeed     float64 `env:"TTS_SPEED" envDefault:"1.2"`
 	TtsPause     float64 `env:"TTS_PAUSE" envDefault:"0.5"`
