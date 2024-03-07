@@ -18,7 +18,7 @@ func TTS(ctx context.Context, input <-chan string) error {
 		return err
 	}
 	otoCtx, readyChan, err := oto.NewContext(&oto.NewContextOptions{
-		SampleRate:   44100,
+		SampleRate:   48000,
 		ChannelCount: 1,
 		Format:       oto.FormatSignedInt16LE,
 	})
