@@ -10,10 +10,11 @@ import (
 	ttspb "cloud.google.com/go/texttospeech/apiv1/texttospeechpb"
 	oto "github.com/ebitengine/oto/v3"
 	mp3 "github.com/hajimehoshi/go-mp3"
+	"google.golang.org/api/option"
 )
 
 func TTS(ctx context.Context, input <-chan string) error {
-	client, err := tts.NewClient(ctx)
+	client, err := tts.NewClient(ctx, option.WithAPIKey(config.GcpAPIKey))
 	if err != nil {
 		return err
 	}
