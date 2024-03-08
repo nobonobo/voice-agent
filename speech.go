@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"log"
 	"os/exec"
 	"runtime"
@@ -10,6 +12,7 @@ import (
 
 	tts "cloud.google.com/go/texttospeech/apiv1"
 	ttspb "cloud.google.com/go/texttospeech/apiv1/texttospeechpb"
+	"github.com/youpy/go-wav"
 	"google.golang.org/api/option"
 )
 
@@ -35,7 +38,6 @@ func TTS(ctx context.Context, input <-chan string) error {
 		return fmt.Errorf("cmd start failed: %w", err)
 	}
 	defer in.Close()
-	muon := make([]byte, 1024)
 	for {
 		select {
 		case <-ctx.Done():
@@ -72,8 +74,9 @@ func TTS(ctx context.Context, input <-chan string) error {
 				return fmt.Errorf("SynthesizeSpeech failed: %w", err)
 			}
 			if len(resp.AudioContent) > 0 {
-				if _, err := in.Write(append(append(muon, resp.AudioContent...), muon...)); err != nil {
-					return fmt.Errorf("in.Write failed: %w", err)
+				reader := wav.NewReader(bytes.NewReader(resp.AudioContent))
+				if _, err := io.Copy(in, reader); err != nil {
+					return fmt.Errorf("io.Copy failed: %w", err)
 				}
 			}
 		}
