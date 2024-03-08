@@ -9,7 +9,6 @@ import (
 	tts "cloud.google.com/go/texttospeech/apiv1"
 	ttspb "cloud.google.com/go/texttospeech/apiv1/texttospeechpb"
 	oto "github.com/ebitengine/oto/v3"
-	mp3 "github.com/hajimehoshi/go-mp3"
 	"google.golang.org/api/option"
 )
 
@@ -49,7 +48,7 @@ func TTS(ctx context.Context, input <-chan string) error {
 
 			// Set the audio configuration.
 			audioConfig := ttspb.AudioConfig{
-				AudioEncoding:   ttspb.AudioEncoding_MP3,
+				AudioEncoding:   ttspb.AudioEncoding_LINEAR16,
 				SpeakingRate:    config.TtsSpeed,
 				SampleRateHertz: 24000,
 			}
@@ -63,11 +62,7 @@ func TTS(ctx context.Context, input <-chan string) error {
 			if err != nil {
 				return err
 			}
-			decodedMp3, err := mp3.NewDecoder(bytes.NewBuffer(resp.AudioContent))
-			if err != nil {
-				return err
-			}
-			player := otoCtx.NewPlayer(decodedMp3)
+			player := otoCtx.NewPlayer(bytes.NewBuffer(resp.AudioContent))
 			player.Play()
 			for player.IsPlaying() {
 				time.Sleep(time.Millisecond)
