@@ -19,7 +19,7 @@ func TTS(ctx context.Context, input <-chan string) error {
 		return err
 	}
 	otoCtx, readyChan, err := oto.NewContext(&oto.NewContextOptions{
-		SampleRate:   48000,
+		SampleRate:   24000,
 		ChannelCount: 1,
 		Format:       oto.FormatSignedInt16LE,
 	})
@@ -49,7 +49,9 @@ func TTS(ctx context.Context, input <-chan string) error {
 
 			// Set the audio configuration.
 			audioConfig := ttspb.AudioConfig{
-				AudioEncoding: ttspb.AudioEncoding_MP3,
+				AudioEncoding:   ttspb.AudioEncoding_MP3,
+				SpeakingRate:    config.TtsSpeed,
+				SampleRateHertz: 24000,
 			}
 
 			// Perform the text-to-speech request.
