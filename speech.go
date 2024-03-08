@@ -1,32 +1,41 @@
 package main
 
 import (
-	"bytes"
 	"context"
+	"fmt"
 	"log"
-	"time"
+	"os/exec"
+	"runtime"
+	"strings"
 
 	tts "cloud.google.com/go/texttospeech/apiv1"
 	ttspb "cloud.google.com/go/texttospeech/apiv1/texttospeechpb"
-	oto "github.com/ebitengine/oto/v3"
 	"google.golang.org/api/option"
 )
+
+// AUDIODEV=plughw:2,0 play -e signed-integer -b 16 --endian little -r 24000 -
+const Options = `-q -t raw -c 1 -e signed-integer -b 16 --endian little -r 24000 -`
 
 func TTS(ctx context.Context, input <-chan string) error {
 	client, err := tts.NewClient(ctx, option.WithAPIKey(config.GcpAPIKey))
 	if err != nil {
-		return err
+		return fmt.Errorf("NewClient failed: %w", err)
 	}
-	otoCtx, readyChan, err := oto.NewContext(&oto.NewContextOptions{
-		SampleRate:   24000,
-		ChannelCount: 1,
-		Format:       oto.FormatSignedInt16LE,
-	})
+	cmd := exec.CommandContext(ctx, "play", strings.Split(Options, " ")...)
+	cmd.Env = append(cmd.Env, "AUDIODEV="+config.TtsDevice)
+	if runtime.GOOS == "windows" {
+		cmd.Env = append(cmd.Env, "AUDIODRIVER=waveaudio")
+	}
+	in, err := cmd.StdinPipe()
 	if err != nil {
-		return err
+		return fmt.Errorf("StdinPipe failed: %w", err)
 	}
-	<-readyChan
-
+	cmd.Stderr = log.Default().Writer()
+	if err := cmd.Start(); err != nil {
+		return fmt.Errorf("cmd start failed: %w", err)
+	}
+	defer in.Close()
+	muon := make([]byte, 1024)
 	for {
 		select {
 		case <-ctx.Done():
@@ -60,14 +69,13 @@ func TTS(ctx context.Context, input <-chan string) error {
 				AudioConfig: &audioConfig,
 			})
 			if err != nil {
-				return err
+				return fmt.Errorf("SynthesizeSpeech failed: %w", err)
 			}
-			player := otoCtx.NewPlayer(bytes.NewBuffer(resp.AudioContent))
-			player.Play()
-			for player.IsPlaying() {
-				time.Sleep(time.Millisecond)
+			if len(resp.AudioContent) > 0 {
+				if _, err := in.Write(append(append(muon, resp.AudioContent...), muon...)); err != nil {
+					return fmt.Errorf("in.Write failed: %w", err)
+				}
 			}
-			player.Close()
 		}
 	}
 }

@@ -6,8 +6,6 @@ require (
 	cloud.google.com/go/speech v1.21.1
 	cloud.google.com/go/texttospeech v1.7.4
 	github.com/caarlos0/env/v10 v10.0.0
-	github.com/ebitengine/oto/v3 v3.1.0
-	github.com/hajimehoshi/go-mp3 v0.3.4
 	github.com/joho/godotenv v1.5.1
 	github.com/sashabaranov/go-openai v1.19.2
 	google.golang.org/api v0.160.0
@@ -19,7 +17,6 @@ require (
 	cloud.google.com/go/compute v1.23.3 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
 	cloud.google.com/go/longrunning v0.5.4 // indirect
-	github.com/ebitengine/purego v0.5.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/go-logr/logr v1.4.1 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
